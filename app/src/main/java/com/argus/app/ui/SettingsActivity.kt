@@ -54,6 +54,10 @@ class SettingsActivity : ComponentActivity() {
                     },
                     onStopFloatingService = {
                         FloatingChatService.stopService(this)
+                    },
+                    onOpenAISettings = {
+                        val intent = Intent(this, AISettingsActivity::class.java)
+                        startActivity(intent)
                     }
                 )
             }
@@ -88,7 +92,8 @@ fun SettingsScreen(
     onRequestOverlayPermission: () -> Unit,
     onRequestAudioPermission: () -> Unit,
     onStartFloatingService: () -> Unit,
-    onStopFloatingService: () -> Unit
+    onStopFloatingService: () -> Unit,
+    onOpenAISettings: () -> Unit
 ) {
     val context = LocalContext.current
     var hasOverlayPermission by remember { mutableStateOf(PermissionManager.hasOverlayPermission(context)) }
@@ -147,6 +152,44 @@ fun SettingsScreen(
                         hasAudioPermission = PermissionManager.hasAudioPermission(context)
                     }
                 )
+            }
+            
+            // AI Settings Section
+            SettingsSection(title = "AI Configuration") {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "AI Settings",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = "Configure AI services and API keys",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        
+                        Button(
+                            onClick = onOpenAISettings,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF00CED1)
+                            )
+                        ) {
+                            Text("Configure")
+                        }
+                    }
+                }
             }
             
             // Floating Service Section

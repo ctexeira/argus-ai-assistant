@@ -1,17 +1,29 @@
 package com.argus.app.viewmodel
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.argus.app.ai.AIService
+import com.argus.app.ai.AIServiceFactory
 import com.argus.app.ai.LocalAIService
 import com.argus.app.data.ChatMessage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class ChatViewModel(private val aiService: AIService = LocalAIService()) : ViewModel() {
+class ChatViewModel(context: Context? = null) : ViewModel() {
+    private val aiService: AIService = if (context != null) {
+        val factory = AIServiceFactory(context)
+        val service = factory.createAIService()
+        Log.d("ChatViewModel", "Created AI service: ${service::class.simpleName}")
+        Log.d("ChatViewModel", "Current service info: ${factory.getCurrentServiceInfo()}")
+        service
+    } else {
+        LocalAIService() // Fallback for cases where context is not available
+    }
     private val _messages = mutableStateListOf<ChatMessage>()
     val messages: List<ChatMessage> = _messages
     
@@ -70,10 +82,12 @@ class ChatViewModel(private val aiService: AIService = LocalAIService()) : ViewM
             val conversationHistory = _messages.takeLast(10).map { it.content }
             
             try {
+                Log.d("ChatViewModel", "Sending message with AI service: ${aiService::class.simpleName}")
                 aiService.sendMessage(userMessage, conversationHistory)
                     .catch { e ->
-                        // Handle errors gracefully
-                        _streamingResponse.value = "Sorry, I encountered an error. Please try again."
+                        // Handle errors gracefully with specific error messages
+                        Log.e("ChatViewModel", "Error in AI service flow: ${e.message}", e)
+                        _streamingResponse.value = e.message ?: "Sorry, I encountered an error. Please try again."
                         delay(1000)
                         finalizeStreamingResponse()
                     }
@@ -85,7 +99,8 @@ class ChatViewModel(private val aiService: AIService = LocalAIService()) : ViewM
                 finalizeStreamingResponse()
                 
             } catch (e: Exception) {
-                _streamingResponse.value = "Sorry, I encountered an error. Please try again."
+                Log.e("ChatViewModel", "Exception in sendMessage: ${e.message}", e)
+                _streamingResponse.value = e.message ?: "Sorry, I encountered an error. Please try again."
                 delay(1000)
                 finalizeStreamingResponse()
             }

@@ -84,4 +84,11 @@ class ApiKeyManager(private val context: Context) {
             .remove(GEMINI_API_KEY)
             .apply()
     }
+    
+    // Debug method to set service to Gemini if it has a key
+    fun ensureGeminiServiceIfAvailable() {
+        if (hasGeminiKey() && getSelectedService() != SERVICE_GEMINI) {
+            setSelectedService(SERVICE_GEMINI)
+        }
+    }
 }

@@ -26,28 +26,46 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.argus.app.MainActivity
 import com.argus.app.R
 import com.argus.app.ui.theme.ArgusTheme
+import com.argus.app.viewmodel.ChatViewModel
 
 class FloatingChatService : Service() {
     
+    private var floatingView: ComposeView? = null
+    private var chatView: ComposeView? = null
     private var windowManager: WindowManager? = null
-    private var floatingView: View? = null
-    private var chatView: View? = null
-    private var isExpanded by mutableStateOf(false)
+    private var isExpanded = false
+    private var floatingLifecycleOwner: MyLifecycleOwner? = null
+    private var chatLifecycleOwner: MyLifecycleOwner? = null
     
     companion object {
+        private var sharedChatViewModel: ChatViewModel? = null
+        
+        fun getSharedChatViewModel(context: Context): ChatViewModel {
+            if (sharedChatViewModel == null) {
+                sharedChatViewModel = ChatViewModel(context)
+            }
+            return sharedChatViewModel!!
+        }
+        
         private const val NOTIFICATION_ID = 1
         private const val CHANNEL_ID = "floating_chat_channel"
         
@@ -100,6 +118,9 @@ class FloatingChatService : Service() {
     
     override fun onDestroy() {
         super.onDestroy()
+        // Clean up lifecycle owners
+        floatingLifecycleOwner?.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        chatLifecycleOwner?.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         removeFloatingView()
         removeChatView()
     }
@@ -167,6 +188,17 @@ class FloatingChatService : Service() {
         }
         
         floatingView = ComposeView(this).apply {
+            // Set up lifecycle owners for proper Compose integration
+            val viewModelStore = ViewModelStore()
+            floatingLifecycleOwner = MyLifecycleOwner()
+            floatingLifecycleOwner!!.performRestore(null)
+            floatingLifecycleOwner!!.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+            setViewTreeLifecycleOwner(floatingLifecycleOwner)
+            setViewTreeViewModelStoreOwner(object : ViewModelStoreOwner {
+                override val viewModelStore: ViewModelStore = viewModelStore
+            })
+            setViewTreeSavedStateRegistryOwner(floatingLifecycleOwner)
+            
             setContent {
                 ArgusTheme {
                     FloatingChatHead {
@@ -221,13 +253,25 @@ class FloatingChatService : Service() {
             } else {
                 WindowManager.LayoutParams.TYPE_PHONE
             },
-            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+            0,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.CENTER
+            softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         }
         
         chatView = ComposeView(this).apply {
+            // Set up lifecycle owners for proper Compose integration
+            val viewModelStore = ViewModelStore()
+            chatLifecycleOwner = MyLifecycleOwner()
+            chatLifecycleOwner!!.performRestore(null)
+            chatLifecycleOwner!!.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+            setViewTreeLifecycleOwner(chatLifecycleOwner)
+            setViewTreeViewModelStoreOwner(object : ViewModelStoreOwner {
+                override val viewModelStore: ViewModelStore = viewModelStore
+            })
+            setViewTreeSavedStateRegistryOwner(chatLifecycleOwner)
+            
             setContent {
                 ArgusTheme {
                     // We'll implement the floating chat interface here
@@ -285,14 +329,12 @@ fun FloatingChatHead(
 fun FloatingChatInterface(
     onClose: () -> Unit
 ) {
-    // Placeholder for now - we'll implement the full chat interface
-    Box(
-        modifier = Modifier
-            .size(300.dp, 400.dp)
-            .background(Color.White)
-            .clickable { onClose() },
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Chat Interface Coming Soon!")
-    }
+    val context = LocalContext.current
+    val chatViewModel = remember { FloatingChatService.getSharedChatViewModel(context) }
+    
+    // Import the ChatInterface from MainActivity
+    com.argus.app.ChatInterface(
+        viewModel = chatViewModel,
+        onClose = onClose
+    )
 }

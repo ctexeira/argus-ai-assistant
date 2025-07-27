@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.argus.app.data.ChatMessage
@@ -31,12 +32,16 @@ import com.argus.app.service.FloatingChatService
 import com.argus.app.ui.SettingsActivity
 import com.argus.app.ui.theme.ArgusTheme
 import com.argus.app.utils.PermissionManager
+import com.argus.app.utils.ApiKeyManager
 import com.argus.app.viewmodel.ChatViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Ensure Gemini service is selected if available
+        ApiKeyManager(this).ensureGeminiServiceIfAvailable()
         setContent {
             ArgusTheme {
                 MainScreen(
@@ -101,7 +106,8 @@ fun MainScreen(
 @Composable
 fun FloatingChatAssistant() {
     var expanded by remember { mutableStateOf(false) }
-    val chatViewModel: ChatViewModel = viewModel()
+    val context = LocalContext.current
+    val chatViewModel: ChatViewModel = viewModel { ChatViewModel(context) }
     
     Box(
         modifier = Modifier

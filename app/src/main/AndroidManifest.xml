@@ -41,6 +41,12 @@
             android:name=".ui.SettingsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
+            
+        <!-- AI Settings Activity -->
+        <activity 
+            android:name=".ui.AISettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.SettingsActivity" />
     </application>
 
 </manifest>

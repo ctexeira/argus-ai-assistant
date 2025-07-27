@@ -59,6 +59,12 @@
             android:name="com.argus.app.ui.SettingsActivity"
             android:exported="false"
             android:parentActivityName="com.argus.app.MainActivity" />
+
+        <!-- AI Settings Activity -->
+        <activity
+            android:name="com.argus.app.ui.AISettingsActivity"
+            android:exported="false"
+            android:parentActivityName="com.argus.app.ui.SettingsActivity" />
         <activity
             android:name="androidx.compose.ui.tooling.PreviewActivity"
             android:exported="true" />

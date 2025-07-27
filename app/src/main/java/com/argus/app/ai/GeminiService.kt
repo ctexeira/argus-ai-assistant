@@ -1,8 +1,11 @@
 package com.argus.app.ai
 
+import android.util.Log
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.*
@@ -29,10 +32,18 @@ class GeminiService(private val apiKey: String) : AIService {
         conversationHistory: List<String>
     ): Flow<String> = flow {
         try {
+            Log.d("GeminiService", "Starting API call with API key: ${apiKey.take(10)}...")
             val request = createRequest(message, conversationHistory)
             
-            client.newCall(request).execute().use { response ->
+            val response = withContext(Dispatchers.IO) {
+                client.newCall(request).execute()
+            }
+            
+            response.use {
+                Log.d("GeminiService", "API response code: ${response.code}")
                 if (!response.isSuccessful) {
+                    val errorMessage = response.body?.string() ?: "No error details"
+                    Log.e("GeminiService", "API error ${response.code}: $errorMessage")
                     when (response.code) {
                         400 -> emit("Invalid API key. Please check your Gemini API key in settings.")
                         403 -> emit("API key access denied. Please check your Gemini API key permissions.")
@@ -71,9 +82,11 @@ class GeminiService(private val apiKey: String) : AIService {
                 }
             }
         } catch (e: IOException) {
+            Log.e("GeminiService", "Network error: ${e.message}", e)
             emit("Network error: Please check your internet connection and try again.")
         } catch (e: Exception) {
-            emit("Error: ${e.message ?: "An unexpected error occurred. Please check your API key and try again."}")  
+            Log.e("GeminiService", "Unexpected error: ${e.message}", e)
+            emit("Error: ${e.message ?: "An unexpected error occurred. Please check your API key and try again."}")
         }
     }
     
@@ -81,26 +94,28 @@ class GeminiService(private val apiKey: String) : AIService {
         return try {
             val request = createNonStreamingRequest(message, emptyList())
             
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    when (response.code) {
-                        400 -> "Invalid API key. Please check your Gemini API key in settings."
-                        403 -> "API key access denied. Please check your Gemini API key permissions."
-                        429 -> "Rate limit exceeded. Please try again in a moment."
-                        500, 502, 503, 504 -> "Gemini service is temporarily unavailable. Please try again later."
-                        else -> "Error ${response.code}: ${response.message}"
-                    }
-                } else {
-                    val responseBody = response.body?.string()
-                    if (responseBody == null) {
-                        "No response received"
+            withContext(Dispatchers.IO) {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        when (response.code) {
+                            400 -> "Invalid API key. Please check your Gemini API key in settings."
+                            403 -> "API key access denied. Please check your Gemini API key permissions."
+                            429 -> "Rate limit exceeded. Please try again in a moment."
+                            500, 502, 503, 504 -> "Gemini service is temporarily unavailable. Please try again later."
+                            else -> "Error ${response.code}: ${response.message ?: "Unknown error"}"
+                        }
                     } else {
-                        try {
-                            val geminiResponse = json.decodeFromString<GeminiResponse>(responseBody)
-                            val content = geminiResponse.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text
-                            content ?: "No response received"
-                        } catch (e: Exception) {
-                            "Error parsing response: ${e.message}"
+                        val responseBody = response.body?.string()
+                        if (responseBody == null) {
+                            "No response received"
+                        } else {
+                            try {
+                                val geminiResponse = json.decodeFromString<GeminiResponse>(responseBody)
+                                val content = geminiResponse.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text
+                                content ?: "No response received"
+                            } catch (e: Exception) {
+                                "Error parsing response: ${e.message}"
+                            }
                         }
                     }
                 }
@@ -124,7 +139,7 @@ class GeminiService(private val apiKey: String) : AIService {
         val jsonBody = json.encodeToString(GeminiRequest.serializer(), requestBody)
         
         return Request.Builder()
-            .url("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey")
+            .url("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey")
             .addHeader("Content-Type", "application/json")
             .post(jsonBody.toRequestBody("application/json".toMediaType()))
             .build()
@@ -144,7 +159,7 @@ class GeminiService(private val apiKey: String) : AIService {
         val jsonBody = json.encodeToString(GeminiRequest.serializer(), requestBody)
         
         return Request.Builder()
-            .url("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey")
+            .url("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey")
             .addHeader("Content-Type", "application/json")
             .post(jsonBody.toRequestBody("application/json".toMediaType()))
             .build()

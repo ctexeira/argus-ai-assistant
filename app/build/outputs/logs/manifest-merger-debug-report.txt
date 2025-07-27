@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:1:1-46:12
-INJECTED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:1:1-46:12
-INJECTED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:1:1-46:12
-INJECTED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:1:1-46:12
+ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:1:1-52:12
+INJECTED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:1:1-52:12
+INJECTED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:1:1-52:12
+INJECTED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:1:1-52:12
 MERGED from [androidx.compose.material3:material3:1.1.2] C:\Users\krazi\.gradle\caches\9.0-milestone-1\transforms\dae9a4eaf7842792d74b24756b9ec870\transformed\jetified-material3-1.1.2\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.compose.material:material-ripple-android:1.5.4] C:\Users\krazi\.gradle\caches\9.0-milestone-1\transforms\9eb182de5db50d33dc8dc19b26822d55\transformed\jetified-material-ripple-release\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.material:material-icons-core-android:1.5.4] C:\Users\krazi\.gradle\caches\9.0-milestone-1\transforms\2bbb6e0968c91baef4edad02dc1ed4fb\transformed\jetified-material-icons-core-release\AndroidManifest.xml:2:1-7:12
@@ -90,8 +90,8 @@ ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml
 	android:name
 		ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:9:22-65
 application
-ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:11:5-44:19
-INJECTED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:11:5-44:19
+ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:11:5-50:19
+INJECTED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:11:5-50:19
 MERGED from [androidx.compose.ui:ui-tooling-android:1.5.4] C:\Users\krazi\.gradle\caches\9.0-milestone-1\transforms\74c729c70977d76a73371936602c4bac\transformed\jetified-ui-tooling-release\AndroidManifest.xml:22:5-26:19
 MERGED from [androidx.compose.ui:ui-tooling-android:1.5.4] C:\Users\krazi\.gradle\caches\9.0-milestone-1\transforms\74c729c70977d76a73371936602c4bac\transformed\jetified-ui-tooling-release\AndroidManifest.xml:22:5-26:19
 MERGED from [androidx.emoji2:emoji2:1.4.0] C:\Users\krazi\.gradle\caches\9.0-milestone-1\transforms\851921cf883e536261445d4c84bea557\transformed\jetified-emoji2-1.4.0\AndroidManifest.xml:23:5-33:19
@@ -166,6 +166,14 @@ ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml
 		ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:42:13-37
 	android:name
 		ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:41:13-48
+activity#com.argus.app.ui.AISettingsActivity
+ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:46:9-49:65
+	android:parentActivityName
+		ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:49:13-62
+	android:exported
+		ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:48:13-37
+	android:name
+		ADDED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml:47:13-50
 uses-sdk
 INJECTED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\krazi\mobile-projects\argus\app\src\main\AndroidManifest.xml
