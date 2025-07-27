@@ -54,7 +54,11 @@ class FloatingChatService : Service() {
         fun startService(context: Context) {
             if (canDrawOverlays(context)) {
                 val intent = Intent(context, FloatingChatService::class.java)
-                context.startForegroundService(intent)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
             } else {
                 Toast.makeText(context, "Overlay permission required", Toast.LENGTH_LONG).show()
             }
@@ -123,13 +127,24 @@ class FloatingChatService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         
-        return Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle("Argus AI Assistant")
-            .setContentText("Tap to access your AI assistant")
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentIntent(pendingIntent)
-            .setOngoing(true)
-            .build()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(this, CHANNEL_ID)
+                .setContentTitle("Argus AI Assistant")
+                .setContentText("Tap to access your AI assistant")
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .build()
+        } else {
+            @Suppress("DEPRECATION")
+            Notification.Builder(this)
+                .setContentTitle("Argus AI Assistant")
+                .setContentText("Tap to access your AI assistant")
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .build()
+        }
     }
     
     private fun showFloatingHead() {

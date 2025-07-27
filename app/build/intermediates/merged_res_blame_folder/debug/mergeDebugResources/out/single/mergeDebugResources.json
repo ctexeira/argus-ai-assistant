@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.argus.app-debug-53:/mipmap_ic_launcher.xml.flat",
+        "source": "com.argus.app-main-55:/mipmap/ic_launcher.xml"
+    },
+    {
+        "merged": "com.argus.app-debug-53:/mipmap_ic_launcher_round.xml.flat",
+        "source": "com.argus.app-main-55:/mipmap/ic_launcher_round.xml"
+    }
+]

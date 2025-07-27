@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorPrimary">#00CED1</color>
+    <color name="colorPrimaryVariant">#009FAE</color>
+    <string name="app_name">Argus</string>
+    <style name="Theme.Argus" parent="android:Theme.Material.Light.NoActionBar">
+        
+    </style>
+</resources>

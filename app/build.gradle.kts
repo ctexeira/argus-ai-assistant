@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -64,4 +65,10 @@ dependencies {
     
     // Icons
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
+    
+    // Security for encrypted preferences
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    
+    // Kotlinx Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }

@@ -88,30 +88,4 @@ class LocalAIService : AIService {
     }
 }
 
-// Future implementation for real AI APIs
-class OpenAIService(private val apiKey: String) : AIService {
-    
-    override suspend fun sendMessage(message: String, conversationHistory: List<String>): Flow<String> = flow {
-        // TODO: Implement OpenAI API integration
-        // This would make actual API calls to OpenAI's GPT models
-        emit("OpenAI integration coming soon!")
-    }
-    
-    override suspend fun getQuickResponse(message: String): String {
-        // TODO: Implement OpenAI API integration
-        return "OpenAI integration coming soon!"
-    }
-}
-
-class GeminiService(private val apiKey: String) : AIService {
-    
-    override suspend fun sendMessage(message: String, conversationHistory: List<String>): Flow<String> = flow {
-        // TODO: Implement Google Gemini API integration
-        emit("Gemini integration coming soon!")
-    }
-    
-    override suspend fun getQuickResponse(message: String): String {
-        // TODO: Implement Google Gemini API integration
-        return "Gemini integration coming soon!"
-    }
-}
+// OpenAIService and GeminiService are implemented in their respective files
